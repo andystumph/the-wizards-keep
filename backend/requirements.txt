@@ -1,7 +1,8 @@
 # Web Framework
-fastapi==0.109.1
+fastapi==0.124.0
 uvicorn[standard]==0.27.0
 python-multipart==0.0.18
+starlette==0.49.1
 
 # Database
 sqlalchemy==2.0.25
@@ -16,6 +17,7 @@ pydantic-settings==2.1.0
 python-jose[cryptography]==3.4.0
 passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
+ecdsa==0.19.1
 
 # CORS
 fastapi-cors==0.0.6
