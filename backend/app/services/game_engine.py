@@ -140,7 +140,7 @@ class GameEngine:
         destination_location = (
             self.db.query(Location).filter(Location.id == new_location_id).first()
         )
-        
+
         if destination_location and destination_location.is_locked:
             # Check if player has the required key in their inventory
             if destination_location.required_key_id:
@@ -152,7 +152,7 @@ class GameEngine:
                     )
                     .first()
                 )
-                
+
                 if not has_key:
                     # Get key name for the error message
                     required_key = (
@@ -161,7 +161,7 @@ class GameEngine:
                         .first()
                     )
                     key_name = required_key.name if required_key else "a key"
-                    
+
                     return GameCommandResponse(
                         success=False,
                         message=f"The way {direction} is locked! You need {key_name} to proceed.",
@@ -170,7 +170,7 @@ class GameEngine:
                     # Player has the key - unlock the door permanently
                     destination_location.is_locked = False  # type: ignore[assignment]
                     self.db.commit()
-                    
+
                     return GameCommandResponse(
                         success=True,
                         message=f"You use the {has_key.item.name} to unlock the door {direction}. The way is now open!",
@@ -462,11 +462,9 @@ TIPS:
         if enemy.is_boss:
             # Get all required items for bosses
             required_items = (
-                self.db.query(Item)
-                .filter(Item.required_for_boss.is_(True))
-                .all()
+                self.db.query(Item).filter(Item.required_for_boss.is_(True)).all()
             )
-            
+
             # Check if player has any required items equipped
             player_has_required = False
             for req_item in required_items:
@@ -482,7 +480,7 @@ TIPS:
                 if inv:
                     player_has_required = True
                     break
-            
+
             if not player_has_required and required_items:
                 return GameCommandResponse(
                     success=False,
@@ -496,7 +494,7 @@ TIPS:
 
         # Calculate player damage based on equipped items
         player_damage = 10  # Base damage
-        
+
         # Add weapon damage
         weapon = (
             self.db.query(PlayerInventory)
@@ -510,7 +508,7 @@ TIPS:
         )
         if weapon and weapon.item.damage:
             player_damage += weapon.item.damage
-        
+
         # Add magic power from equipped magic items
         magic_items = (
             self.db.query(PlayerInventory)
@@ -525,7 +523,7 @@ TIPS:
         for magic_inv in magic_items:
             if magic_inv.item.magic_power:
                 player_damage += magic_inv.item.magic_power
-        
+
         # Player attacks first
         enemy.health -= player_damage  # type: ignore[assignment]
 
@@ -555,7 +553,7 @@ TIPS:
 
         # Enemy counter-attacks
         player_defense = 0
-        
+
         # Add armor defense
         armor = (
             self.db.query(PlayerInventory)
@@ -569,19 +567,19 @@ TIPS:
         )
         if armor and armor.item.defense:
             player_defense += armor.item.defense
-        
+
         # Add defense from magic items
         for magic_inv in magic_items:
             if magic_inv.item.defense:
                 player_defense += magic_inv.item.defense
-        
+
         enemy_damage = max(1, int(enemy.damage) - player_defense)
         game_state.health -= enemy_damage  # type: ignore[assignment]
         message += f"\n\nThe {enemy.name} attacks you for {enemy_damage} damage!"
-        
+
         if player_defense > 0:
             message += f" (reduced by {player_defense} defense)"
-        
+
         message += f"\n\nYour health: {game_state.health}/{game_state.max_health}"
         message += f"\n{enemy.name} health: {enemy.health}"
 
@@ -756,13 +754,15 @@ TIPS:
 
             # Activate the magic item by equipping it
             inv_item.equipped = True  # type: ignore[assignment]
-            
+
             message = f"You activate the {item.name}! "
             if item.magic_power > 0:
                 message += f"You feel arcane energy flow through you (+{item.magic_power} magic power)."
             if item.defense > 0:
-                message += f" A protective aura surrounds you (+{item.defense} defense)."
-            
+                message += (
+                    f" A protective aura surrounds you (+{item.defense} defense)."
+                )
+
             if item.required_for_boss:
                 message += "\n\n✨ This powerful artifact will be essential when facing mighty foes!"
 
