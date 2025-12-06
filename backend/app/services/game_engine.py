@@ -506,7 +506,7 @@ TIPS:
             .filter(
                 PlayerInventory.player_id == game_state.player_id,
                 PlayerInventory.equipped.is_(True),
-                Item.item_type == ItemType.WEAPON,
+                Item.item_type == ItemType.WEAPON,  # type: ignore[arg-type]
             )
             .first()
         )
@@ -520,7 +520,7 @@ TIPS:
             .filter(
                 PlayerInventory.player_id == game_state.player_id,
                 PlayerInventory.equipped.is_(True),
-                Item.item_type == ItemType.MAGIC,
+                Item.item_type == ItemType.MAGIC,  # type: ignore[arg-type]
             )
             .all()
         )
@@ -565,7 +565,7 @@ TIPS:
             .filter(
                 PlayerInventory.player_id == game_state.player_id,
                 PlayerInventory.equipped.is_(True),
-                Item.item_type == ItemType.ARMOR,
+                Item.item_type == ItemType.ARMOR,  # type: ignore[arg-type]
             )
             .first()
         )
