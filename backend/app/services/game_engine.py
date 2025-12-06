@@ -171,9 +171,13 @@ class GameEngine:
                     destination_location.is_locked = False  # type: ignore[assignment]
                     self.db.commit()
 
+                    unlock_msg = (
+                        f"You use the {has_key.item.name} to unlock the door "
+                        f"{direction}. The way is now open!"
+                    )
                     return GameCommandResponse(
                         success=True,
-                        message=f"You use the {has_key.item.name} to unlock the door {direction}. The way is now open!",
+                        message=unlock_msg,
                     )
 
         # Check if there are hostile enemies blocking the way
@@ -757,14 +761,20 @@ TIPS:
 
             message = f"You activate the {item.name}! "
             if item.magic_power > 0:
-                message += f"You feel arcane energy flow through you (+{item.magic_power} magic power)."
+                message += (
+                    f"You feel arcane energy flow through you "
+                    f"(+{item.magic_power} magic power)."
+                )
             if item.defense > 0:
                 message += (
                     f" A protective aura surrounds you (+{item.defense} defense)."
                 )
 
             if item.required_for_boss:
-                message += "\n\n✨ This powerful artifact will be essential when facing mighty foes!"
+                message += (
+                    "\n\n✨ This powerful artifact will be essential when "
+                    "facing mighty foes!"
+                )
 
             return GameCommandResponse(
                 success=True,
