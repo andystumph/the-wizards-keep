@@ -59,23 +59,23 @@ This project is designed as a **comprehensive learning resource** for developers
 ## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        Frontend (Tier 1)                     │
-│                   HTML + CSS + JavaScript                    │
-│              Retro terminal-style interface                  │
-└─────────────────────────────────────────────────────────────┘
-                              ↕ HTTP/REST
-┌─────────────────────────────────────────────────────────────┐
-│                      Backend API (Tier 2)                    │
-│                   FastAPI + Python 3.11+                     │
-│              Game engine and business logic                  │
-└─────────────────────────────────────────────────────────────┘
-                              ↕ SQL
-┌─────────────────────────────────────────────────────────────┐
-│                       Database (Tier 3)                      │
-│                       PostgreSQL 15+                         │
-│         Game state, player data, world content               │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                     Frontend (Tier 1)                        │
+│                HTML + CSS + JavaScript                       │
+│             Retro terminal-style interface                   │
+└──────────────────────────────────────────────────────────────┘
+                           ↕ HTTP/REST
+┌──────────────────────────────────────────────────────────────┐
+│                   Backend API (Tier 2)                       │
+│              FastAPI + Python 3.11+                          │
+│          Game engine and business logic                      │
+└──────────────────────────────────────────────────────────────┘
+                            ↕ SQL
+┌──────────────────────────────────────────────────────────────┐
+│                    Database (Tier 3)                         │
+│                   PostgreSQL 15+                             │
+│      Game state, player data, world content                  │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ## 🚀 Quick Start
