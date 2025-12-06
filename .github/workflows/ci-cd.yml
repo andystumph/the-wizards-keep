@@ -19,6 +19,9 @@ on:
     branches: [ master, main, develop ]
   workflow_dispatch:  # Allow manual trigger
 
+permissions:
+  security-events: write  # Required for CodeQL SARIF upload
+
 jobs:
   # ============================================================================
   # Test and Lint Backend
