@@ -1,0 +1,20 @@
+# PostgreSQL PersistentVolumeClaim
+#
+# Educational Note:
+# PVCs request storage from the cluster.
+# Data persists even if pods are deleted/recreated.
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: wizards-keep
+  labels:
+    app: database
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  # storageClassName: local-path  # Uncomment for Rancher Desktop

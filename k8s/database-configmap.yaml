@@ -1,0 +1,16 @@
+# PostgreSQL Database ConfigMap
+#
+# Educational Note:
+# ConfigMaps store non-sensitive configuration data.
+# For sensitive data like passwords, use Secrets instead.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: wizards-keep
+  labels:
+    app: database
+data:
+  POSTGRES_DB: wizards_keep
+  POSTGRES_USER: wizard

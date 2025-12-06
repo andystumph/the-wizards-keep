@@ -1,0 +1,183 @@
+# GitHub Actions CI/CD Pipeline
+#
+# This workflow runs on every push and pull request.
+# It tests, lints, scans for security issues, and builds Docker images.
+#
+# Educational Notes:
+# - GitHub Actions automates testing and deployment
+# - Workflows are defined in YAML
+# - Jobs can run in parallel or sequentially
+# - Artifacts can be shared between jobs
+# - Secrets store sensitive data like credentials
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  # ============================================================================
+  # Test and Lint Backend
+  # ============================================================================
+  test-backend:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: [3.11]
+    
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: wizard
+          POSTGRES_PASSWORD: wizard123
+          POSTGRES_DB: wizards_keep_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        working-directory: ./backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      
+      - name: Run tests with coverage
+        working-directory: ./backend
+        env:
+          DATABASE_URL: postgresql://wizard:wizard123@localhost:5432/wizards_keep_test
+        run: |
+          pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./backend/coverage.xml
+          flags: backend
+          name: backend-coverage
+      
+      - name: Run Black formatter check
+        working-directory: ./backend
+        run: |
+          black --check app/ tests/
+      
+      - name: Run flake8 linter
+        working-directory: ./backend
+        run: |
+          flake8 app/ tests/ --max-line-length=100 --extend-ignore=E203,W503
+      
+      - name: Run mypy type checker
+        working-directory: ./backend
+        run: |
+          mypy app/ --ignore-missing-imports
+      
+      - name: Run bandit security scanner
+        working-directory: ./backend
+        run: |
+          bandit -r app/ -ll
+
+  # ============================================================================
+  # Build Docker Images
+  # ============================================================================
+  build-images:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: test-backend
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./Dockerfile.backend
+          push: false
+          tags: wizards-keep-backend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Build frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.frontend
+          push: false
+          tags: wizards-keep-frontend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ============================================================================
+  # Security Scanning
+  # ============================================================================
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: test-backend
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # ============================================================================
+  # Deployment (only on main branch)
+  # ============================================================================
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [test-backend, build-images, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy notification
+        run: |
+          echo "🚀 Deployment would happen here"
+          echo "This is where you'd deploy to your production environment"
+          echo "Examples:"
+          echo "  - Push images to container registry"
+          echo "  - Update Kubernetes deployments"
+          echo "  - Deploy to cloud provider (AWS, Azure, GCP)"
+          echo "  - Update DNS records"
+          echo ""
+          echo "For this educational project, we're just showing the concept."

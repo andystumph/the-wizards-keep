@@ -1,0 +1,44 @@
+# Database Initialization Job
+#
+# Educational Note:
+# Jobs run to completion (unlike Deployments which run continuously).
+# Perfect for one-time setup tasks like database initialization.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-init
+  namespace: wizards-keep
+  labels:
+    app: db-init
+spec:
+  template:
+    metadata:
+      labels:
+        app: db-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: db-init
+        image: wizards-keep-backend:latest
+        imagePullPolicy: IfNotPresent
+        command: ["python", "scripts/init_db.py"]
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://wizard:wizard123@database:5432/wizards_keep"
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_DB
+  backoffLimit: 3

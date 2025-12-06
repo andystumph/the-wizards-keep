@@ -1,0 +1,101 @@
+# Docker Compose Configuration
+#
+# Orchestrates all services for local development
+#
+# Educational Notes:
+# - Docker Compose manages multi-container applications
+# - Services are isolated but can communicate via networks
+# - Volumes persist data between container restarts
+# - Environment variables configure services
+# - Health checks ensure services are ready before dependencies start
+
+services:
+  # Database Service (Tier 3)
+  database:
+    image: postgres:15-alpine
+    container_name: wizards-keep-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: wizard
+      POSTGRES_PASSWORD: wizard123
+      POSTGRES_DB: wizards_keep
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - wizards-keep-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wizard"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API Service (Tier 2)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend
+    container_name: wizards-keep-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://wizard:wizard123@database:5432/wizards_keep
+      POSTGRES_USER: wizard
+      POSTGRES_PASSWORD: wizard123
+      POSTGRES_DB: wizards_keep
+      DEBUG: "true"
+      CORS_ORIGINS: '["http://localhost:8080", "http://localhost:3000", "http://frontend"]'
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - wizards-keep-network
+    volumes:
+      # Mount source code for development (hot reload)
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend Service (Tier 1)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: wizards-keep-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - wizards-keep-network
+
+  # Database Initialization (runs once)
+  db-init:
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend
+    container_name: wizards-keep-db-init
+    environment:
+      DATABASE_URL: postgresql://wizard:wizard123@database:5432/wizards_keep
+      POSTGRES_USER: wizard
+      POSTGRES_PASSWORD: wizard123
+      POSTGRES_DB: wizards_keep
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - wizards-keep-network
+    command: python scripts/init_db.py
+    restart: "no"
+
+# Networks
+networks:
+  wizards-keep-network:
+    driver: bridge
+
+# Volumes for data persistence
+volumes:
+  postgres-data:
+    driver: local

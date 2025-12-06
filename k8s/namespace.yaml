@@ -1,0 +1,13 @@
+# Kubernetes Namespace
+#
+# Educational Note:
+# Namespaces provide logical isolation within a cluster.
+# Good practice to separate different applications or environments.
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wizards-keep
+  labels:
+    app: wizards-keep
+    environment: production

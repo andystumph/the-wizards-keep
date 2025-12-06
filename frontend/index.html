@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wizard's Keep - A Text Adventure</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">THE WIZARD'S KEEP</h1>
+            <p class="subtitle">A Text Adventure Game</p>
+        </header>
+
+        <!-- Game Area -->
+        <main class="game-area">
+            <!-- Welcome Screen (shown initially) -->
+            <div id="welcome-screen" class="welcome-screen">
+                <div class="welcome-content">
+                    <h2>WELCOME, TRAVELER</h2>
+                    <p class="story-intro">
+                        The dark wizard Malachar has terrorized the realm for decades. 
+                        Brave heroes have ventured to his keep, but none have returned.
+                    </p>
+                    <p class="story-intro">
+                        You are Kael Thornwind, a half-elven Ranger whose village was 
+                        destroyed by the wizard's dark magic. Now you seek vengeance.
+                    </p>
+                    <p class="story-intro">
+                        Your quest: infiltrate the Wizard's Keep and defeat Malachar once and for all.
+                    </p>
+                    
+                    <div class="char-creation">
+                        <h3>CREATE YOUR CHARACTER</h3>
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" maxlength="50" placeholder="Enter username">
+                        </div>
+                        <div class="form-group">
+                            <label for="charname">Character Name:</label>
+                            <input type="text" id="charname" maxlength="50" placeholder="Kael Thornwind" value="Kael Thornwind">
+                        </div>
+                        <button id="start-game" class="btn">BEGIN YOUR QUEST</button>
+                    </div>
+                    
+                    <div class="help-text">
+                        <p><strong>TIP:</strong> Type HELP at any time to see available commands.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Screen (hidden initially) -->
+            <div id="game-screen" class="game-screen" style="display: none;">
+                <!-- Status Bar -->
+                <div class="status-bar">
+                    <div class="status-item">
+                        <span class="status-label">Player:</span>
+                        <span id="player-name" class="status-value">-</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Health:</span>
+                        <span id="health-value" class="status-value">100/100</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Level:</span>
+                        <span id="level-value" class="status-value">1/3</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Location:</span>
+                        <span id="location-name" class="status-value">-</span>
+                    </div>
+                </div>
+
+                <!-- Output Area -->
+                <div id="output" class="output-area">
+                    <div class="output-line">Welcome to The Wizard's Keep...</div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="input-area">
+                    <span class="prompt">&gt;</span>
+                    <input type="text" id="command-input" class="command-input" autocomplete="off" autofocus>
+                </div>
+
+                <!-- Quick Commands -->
+                <div class="quick-commands">
+                    <button class="quick-btn" data-command="LOOK">LOOK</button>
+                    <button class="quick-btn" data-command="INVENTORY">INVENTORY</button>
+                    <button class="quick-btn" data-command="STATS">STATS</button>
+                    <button class="quick-btn" data-command="HELP">HELP</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 The Wizard's Keep | An Educational Project</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

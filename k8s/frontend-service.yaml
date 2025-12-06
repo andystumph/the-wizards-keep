@@ -1,0 +1,24 @@
+# Frontend Service
+#
+# Educational Note:
+# LoadBalancer type makes the frontend accessible from outside the cluster.
+# In cloud environments, this provisions a load balancer.
+# In Rancher Desktop, it exposes via NodePort.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: wizards-keep
+  labels:
+    app: frontend
+    tier: presentation
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: frontend

@@ -1,0 +1,72 @@
+# Backend API Deployment
+#
+# Educational Note:
+# This deploys the FastAPI backend with auto-scaling capability.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: wizards-keep
+  labels:
+    app: backend
+    tier: application
+spec:
+  replicas: 2  # Run 2 instances for high availability
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+        tier: application
+    spec:
+      containers:
+      - name: backend
+        image: wizards-keep-backend:latest
+        imagePullPolicy: IfNotPresent  # For local development
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://wizard:wizard123@database:5432/wizards_keep"
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_DB
+        - name: DEBUG
+          value: "false"
+        - name: CORS_ORIGINS
+          value: '["http://localhost:8080", "http://frontend"]'
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
