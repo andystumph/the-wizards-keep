@@ -98,7 +98,9 @@ class Location(Base):
     required_key_id = Column(Integer, ForeignKey("items.id"), nullable=True)
 
     # Relationships
-    items = relationship("Item", back_populates="location", foreign_keys="Item.location_id")
+    items = relationship(
+        "Item", back_populates="location", foreign_keys="Item.location_id"
+    )
     enemies = relationship("Enemy", back_populates="location")
     game_states = relationship("GameState", back_populates="current_location")
 
@@ -148,7 +150,9 @@ class Item(Base):
     original_location_id = Column(Integer, ForeignKey("locations.id"), nullable=True)
 
     # Relationships
-    location = relationship("Location", back_populates="items", foreign_keys=[location_id])
+    location = relationship(
+        "Location", back_populates="items", foreign_keys=[location_id]
+    )
     player_inventories = relationship("PlayerInventory", back_populates="item")
 
 

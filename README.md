@@ -1,5 +1,7 @@
 # The Wizard's Keep
 
+[![CI/CD Pipeline](https://github.com/andystumph/the-wizards-keep/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/andystumph/the-wizards-keep/actions/workflows/ci-cd.yml)
+
 A text-based adventure game built to teach modern software development practices.
 
 > **🎓 New to programming?** Start with our [Complete Beginner's Guide](docs/GETTING_STARTED.md) that explains everything from scratch!
